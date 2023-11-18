@@ -10,3 +10,5 @@ class Game(models.Model):
     gamer = models.ForeignKey(Gamer, on_delete=models.CASCADE)
     number_of_players = models.IntegerField(default=0)
     skill_level = models.IntegerField(default=0)
+    
+    
