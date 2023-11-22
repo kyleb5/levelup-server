@@ -29,14 +29,8 @@ class GameView(ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        """Handle POST operations
-
-        Returns
-            Response -- JSON serialized game instance
-        """
         gamer = Gamer.objects.get(uid=request.data["userId"])
         game_type = GameType.objects.get(pk=request.data["gameType"])
-
         game = Game.objects.create(
             title=request.data["title"],
             maker=request.data["maker"],
