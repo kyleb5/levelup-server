@@ -14,5 +14,13 @@
             "uid": 2,
             "bio": "Kyle B"
         }
+    },
+    {
+        "model": "levelupapi.gamer",
+        "pk": 3,
+        "fields": {
+            "uid": "oNoJcS6WFFZVekBNHHBD44ckfXB2",
+            "bio": "Account"
+        }
     }
 ]
