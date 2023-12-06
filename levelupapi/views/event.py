@@ -1,9 +1,10 @@
 """View module for handling requests about game types"""
 from django.http import HttpResponseServerError
+from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from levelupapi.models import Event, Game, Gamer
+from levelupapi.models import Event, Game, Gamer, EventGamer
 
 
 class EventView(ViewSet):
@@ -70,6 +71,31 @@ class EventView(ViewSet):
         event = Event.objects.get(pk=pk)
         event.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['post'], detail=True)
+    def signup(self, request, pk):
+        """Post request for a user to sign up for an event"""
+
+        gamer = Gamer.objects.get(uid=request.data["userId"])
+        event = Event.objects.get(pk=pk)
+        attendee = EventGamer.objects.create(
+            gamer=gamer,
+            event=event
+        )
+        return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['delete'], detail=True)
+    def leave(self, request, pk):
+        """Destroy request for a user to leave for an event"""
+
+        gamer = Gamer.objects.get(uid=request.data["userId"])
+        event = Event.objects.get(pk=pk)
+        attendee = EventGamer.objects.get(
+            gamer=gamer,
+            event=event
+        )
+        attendee.delete()
+        return Response({'message': 'Gamer removed'}, status=status.HTTP_201_CREATED)
 
 
 class EventSerializer(serializers.ModelSerializer):
