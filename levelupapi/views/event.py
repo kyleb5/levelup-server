@@ -13,7 +13,7 @@ class EventView(ViewSet):
     def retrieve(self, request, pk):
         """Handle GET requests for event type
         Returns:
-            Response -- JSON serialized game type
+            Response -- JSON serialized event
         """
         event = Event.objects.get(pk=pk)
         serializer = EventSerializer(event)
@@ -23,10 +23,16 @@ class EventView(ViewSet):
         """Handle GET requests to get all events
 
         Returns:
-            Response -- JSON serialized list of game types
+            Response -- JSON serialized list of events
             """
-        event = Event.objects.all()
-        serializer = EventSerializer(event, many=True)
+        uid = request.META['HTTP_AUTHORIZATION']
+        gamer = Gamer.objects.get(uid=uid)
+        events = Event.objects.all()
+        for event in events:
+            # Check to see if there is a row in the Event Games table that has the passed in gamer and event
+            event.joined = len(EventGamer.objects.filter(
+                gamer=gamer, event=event)) > 0
+        serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -103,4 +109,6 @@ class EventSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Event
-        fields = ('id', 'game', 'description', 'date', 'time', 'organizer')
+        fields = ('id', 'game', 'organizer',
+                  'description', 'date', 'time',
+                  'joined')
